@@ -1,0 +1,12 @@
+{
+	"files.associations": {
+		"*.rules": "shellscript",
+		"*.ni": "javascript",
+		"*.ph": "cpp",
+		"iostream": "cpp",
+		"vector": "cpp",
+		"sstream": "cpp",
+		"cstdlib": "cpp",
+		"bitset": "cpp"
+	},
+}

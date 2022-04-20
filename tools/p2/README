@@ -1,0 +1,177 @@
+################################################################################
+#                                                                              #
+#        CARD 2021-22 - Practical 2 Installation and Getting Started           #
+#                                                                              #
+################################################################################
+
+1. Before starting P2 you must install some source files for running Pin.
+   First create a working directory and go to that directory. 
+   For example:
+   
+     mkdir -p $HOME/card_p2/
+     cd $HOME/card_p2
+
+   Then run installation script provided in the shared area for P2.
+   
+     /group/teaching/card/p2/install.sh
+
+   The installation script will copy files from /group/teaching/card/p2 to your
+   working directory, then update the setup.sh script so that the P2_WORK
+   environment variable will thereafter point to your working directory,
+   and finally it will run an installation test. You should see output from
+   the install script that looks like this:
+   
+     Installing Pin for CARD P2 in $HOME/card_p2 on Sat 9 Oct 15:40:58 BST 2021
+     1. copying Pin files...OK
+     2. Testing the installation
+        - setting up the environment...OK
+        - compiling the BPExample Pin tool...OK
+        - running the BPExample Pin tool on the gromacs benchmark...OK
+     Testing completed successfully
+     Environment has been set for using Pin, and your P2_WORK directory is $HOME/card_p2
+
+   If you have any problems, inspect the log files in $HOME/card_p2/logs
+
+2. Before each Pin session you must source the setup_pin.sh file located in
+   the working directory you created in step 1.
+   
+     source $HOME/card_p2/setup_pin.sh
+
+   This sets up a number of environment variables that are needed to run
+   your Pin tool on the three benchmark programs. Is also adds a shared library
+   path to your dynamic loader search path - this makes available a library
+   (called libgfortran.so.3) that is needed by the gromacs benchmark.
+   
+   For information, the main environment variables created by setup.sh are:
+   
+    $P2_WORK      : path to the working area created at step 1
+    $CARD         : path to the shared CARD directory in /group/teaching
+    $CARD_P2      : path to the shared directory for practical 2 (P2)
+    $PIN_ROOT     : path to a shared Pin installation
+    $GROMACS_PATH : path to a shared binary of the gromacs benchmark
+    $GROMACS_DATA : path to your local copy of the gromacs input/output files
+    $GOBMK_PATH   : path to a shared binary of the gobmk benchmark
+    $SJENG_PATH   : path to a shared binary of the sjeng benchmark
+
+3. To run the benchmarks through your branch predictor you must first code up your
+   branch predictor and compile it as a Pin tool. The result will be a dynamic
+   shared library that will be loaded by Pin when it runs.
+
+   For example, to use the example branch predictor provided with this practical
+   go to your $P2_WORK directory and set up the $BP_EXAMPLE environment variable
+   to point to the BPExample subdir where the example branch predictor is located.
+   
+     cd $P2_WORK
+     BP_EXAMPLE=$P2_WORK/BPExample
+
+   Rename the branch_predictor_example.cpp source file using your student-id. 
+   For example if your s-id is s1234567, you can execute the following commands:
+
+     cd $BP_EXAMPLE
+     mv branch_predictor_example.cpp s1234567.cpp
+
+   You can then modify the file $BP_EXAMPLE/s1234567.cpp to implement your branch
+   predictors.
+   
+   You can compile the branch predictor tool with the following command:
+   
+     cd $BP_EXAMPLE
+     make obj-intel64/s1234567.so TARGET=intel64 PIN_ROOT=$PIN_ROOT
+     
+   This creates your branch predictor as a Pin tool within the shared library:
+   
+    $BP_EXAMPLE/obj-intel64/s1234567.so
+
+   NOTE: 'make' must be launched from within the $BP_EXAMPLE directory
+
+4. Run your branch predictor on a benchmark application:
+
+   The general usage of pin is:
+   
+     pin -t <tool> <tool_options> -- <benchmark> <benchmark_options>
+
+   where:
+     <tool>               : the shared library containing the Pin tool
+     <tool_options>       : any command line options for the Pin tool
+     <benchmark>          : the application binary that you want to run
+     <benchmark_options>  : any benchmark options and input/output files
+     
+   Any of three benchmarks provided with this practical can be used as a <benchmark>
+   For example:
+
+     pin -t $BP_EXAMPLE/obj-intel64/s1234567.so \
+         -BP_type always_taken \
+         -o stats_always_taken.out \
+         -- \
+         $GROMACS_PATH/gromacs_base.amd64-m64-gcc41-nn \
+            -silent -deffnm $GROMACS_DATA/gromacs -nice 0 \
+            > gromacs.out
+
+   You can also run the the precompiled example predictor with the following command:
+
+     pin -t $BP_EXAMPLE/obj-intel64/branch_predictor_example.so \
+         -BP_type always_taken \
+         -o stats_always_taken.out \
+         -- \
+         $GROMACS_PATH/gromacs_base.amd64-m64-gcc41-nn \
+            -silent -deffnm $GROMACS_DATA/gromacs -nice 0 \
+            > gromacs.out
+
+################################################################################
+#                                                                              #
+# The three benchmarks and their arguments                                     #
+#                                                                              #
+################################################################################
+
+To run the benchmarks you must have sourced your setup_pin.sh file to setup the
+environment variables $GROMACS_PATH, $GOBMK_PATH, and $SJENG_PATH (and also the
+$GROMACS_DATA variable).
+
+  source $HOME/card_p2/setup_pin.sh
+
+There are three benchmarks. The following commands are to be used as the <benchmark>
+argument when running Pin (i.e. in the command: pin -t <tool> <tool options> -- <benchmark>)
+
+a. Gromacs benchmark and arguments
+
+   $GROMACS_PATH/gromacs_base.amd64-m64-gcc41-nn -silent -deffnm $GROMACS_DATA/gromacs -nice 0 > gromacs.out
+
+b. Gobmk benchmark and arguments
+
+   $GOBMK_PATH/gobmk_base.amd64-m64-gcc41-nn --quiet --mode gtp < $GOBMK_PATH/13x13.tst > gobmk.out
+
+c. Sjeng benchmark and arguments
+
+   $SJENG_PATH/sjeng_base.amd64-m64-gcc41-nn $SJENG_PATH/ref.txt > sjeng.out
+
+NOTE 1: Pin is capable of running any binary as a benchmark. For example, when
+        debugging your code, you can use 'ls' as your <benchmark> argument.
+
+NOTE 2: Do not attempt to run pin from within the shared space 
+        (i.e. /afs/inf.ed.ac.uk/group/teaching/card/p2/). Doing so will result in
+        an error, as you do not have write permissions for that directory!
+
+################################################################################
+
+**** Troubleshooting ****
+
+If you encounter problems in setting up your Pin system or compiling the example
+Pin tool, please try the following sequence of commands to initialize a new
+setup in your home directory from scratch. This will compile the example tool
+and run it on gromacs to test each part of the system.
+
+  mkdir -p $HOME/card_p2/
+  /group/teaching/card/p2/install.sh
+  cd $HOME/card_p2
+  source setup_pin.sh 
+  cd BPExample
+  rm -f obj-intel64/*.so obj-intel64/*.o 
+  make obj-intel64/branch_predictor_example.so TARGET=intel64 PIN_ROOT=$PIN_ROOT
+  pin -t $BP_EXAMPLE/obj-intel64/branch_predictor_example.so \
+      -BP_type always_taken -o stats_always_taken.out -- \
+      $GROMACS_PATH/gromacs_base.amd64-m64-gcc41-nn -silent \
+      -deffnm $GROMACS_DATA/gromacs -nice 0 > gromacs.out
+
+################################################################################
+
+Nigel Topham, October 2021
