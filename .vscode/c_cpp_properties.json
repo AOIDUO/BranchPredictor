@@ -3,19 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/source/include/pin/",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/source/include/pin/gen",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/xed-intel64/include/xed/",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/components/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/crt/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/libstdc++/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/libunwind/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/stlport/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/xed-ia32/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/xed-intel64/include",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/crt/include/arch-x86",
-                "/home/aoiduo/Documents/card/cw/2/infteachingcard/p2/tools/pin-3.20-98437-gf02b61307-gcc-linux/extras/crt/include/kernel/uapi"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
